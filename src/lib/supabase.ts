@@ -21,7 +21,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 let lastAuthEvent = 0;
 const AUTH_EVENT_THROTTLE = 5000; // 5 seconds minimum between auth events
 
-supabase.auth.onAuthStateChange((event, session) => {
+supabase.auth.onAuthStateChange((event) => {
   const now = Date.now();
   
   // Only process auth events if enough time has passed since the last one
@@ -35,3 +35,31 @@ supabase.auth.onAuthStateChange((event, session) => {
     }
   }
 });
+
+// Function to fetch orders for the authenticated user
+export async function getOrders() {
+  try {
+    // Get authenticated user
+    const { data: user, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user?.user) {
+      throw new Error('Usuário não autenticado');
+    }
+
+    // Fetch orders only for the logged-in user
+    const { data, error } = await supabase
+      .from('orders')
+      .select('user_name, observations')
+      .eq('user_id', user.user.id);
+
+    if (error) {
+      throw new Error(`Erro ao buscar pedidos: ${error.message}`);
+    }
+
+    console.log('Pedidos:', data);
+    return data;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
