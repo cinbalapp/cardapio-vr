@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Clock, LogOut, Download, Plus, Trash2 } from 'lucide-react';
@@ -170,6 +171,35 @@ export default function AdminDashboard() {
     } else {
       toast.success('Prato excluído com sucesso');
       fetchDishes();
+    }
+  };
+
+  const clearOrders = async () => {
+    const confirmClear = window.confirm("Você tem certeza que deseja limpar todos os pedidos?");
+    if (confirmClear) {
+      try {
+        // Primeiro deleta os itens dos pedidos
+        const { error: itemsError } = await supabase
+          .from('order_items')
+          .delete()
+          .not('id', 'is', null); // Deleta todos os itens
+
+        if (itemsError) throw itemsError;
+
+        // Depois deleta os pedidos
+        const { error: ordersError } = await supabase
+          .from('orders')
+          .delete()
+          .not('id', 'is', null); // Deleta todos os pedidos
+
+        if (ordersError) throw ordersError;
+
+        toast.success('Pedidos limpos com sucesso');
+        setOrders([]); // Clear the local state
+      } catch (error) {
+        console.error('Erro ao limpar pedidos:', error);
+        toast.error('Erro ao limpar pedidos. Verifique o console para mais detalhes.');
+      }
     }
   };
 
@@ -488,19 +518,27 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Pedidos</h2>
-            <button
-              onClick={generatePDF}
-              className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Baixar PDF
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={clearOrders}
+                className="flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Limpar Pedidos
+              </button>
+              <button
+                onClick={generatePDF}
+                className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Baixar PDF
+              </button>
+            </div>
           </div>
           <div className="space-y-4">
             {orders.map((order) => (
               <div key={order.id} className="p-4 border rounded-lg">
                 <div className="flex justify-between">
-                  <h3 className="font-medium">{order.user_name}</h3>
+                  <h3 className="font-medium">Pedido {order.user_name}</h3>
                   <span className="text-sm text-gray-600">
                     {format(new Date(order.created_at), 'dd/MM/yyyy HH:mm')}
                   </span>
