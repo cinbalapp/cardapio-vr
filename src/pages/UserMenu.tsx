@@ -269,11 +269,6 @@ export default function UserMenu() {
             <div key={day} className={`mb-12 ${day === currentDay ? 'relative' : ''}`}>
               <h2 className="text-2xl font-bold mb-6 text-gray-800">
                 {DAYS_OF_WEEK[day]}
-                {day === currentDay && (
-                  <span className="ml-2 inline-block px-3 py-1 text-sm font-semibold text-white bg-green-500 rounded-full">
-                    Hoje
-                  </span>
-                )}
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
