@@ -267,14 +267,14 @@ export default function UserMenu() {
         <div className="mb-8">
           {[1, 2, 3, 4, 5, 6].map((day) => (
             <div key={day} className={`mb-12 ${day === currentDay ? 'relative' : ''}`}>
-              <h2 className="text-2xl font-bold mb-6 text-gray-800">
+{/*               <h2 className="text-2xl font-bold mb-6 text-gray-800">
                 {DAYS_OF_WEEK[day]}
                 {day === currentDay && (
                   <span className="ml-2 inline-block px-3 py-1 text-sm font-semibold text-white bg-green-500 rounded-full">
                     Hoje
                   </span>
                 )}
-              </h2>
+              </h2> */}
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <section>
